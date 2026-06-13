@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+*.so
+*.dylib
+*.dll
+**/.cache/
+
+.venv/
+.env
+.DS_Store
+
+# Original checkpoints, GGUF files and generated ONNX artifacts are large.
+models/
+GLM-OCR/
+*.gguf
+
+# Local output / scratch.
+outputs/
+logs/
+tmp/
+
+# Backup files.
+*.bak
+
+# Debugging session artifacts.
+codex_session_*

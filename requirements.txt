@@ -1,0 +1,9 @@
+numpy
+pillow
+tokenizers
+jinja2
+onnxruntime-gpu
+huggingface_hub
+onnx
+torch
+transformers
