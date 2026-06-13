@@ -114,54 +114,61 @@ models/export/onnx/
 └── merger_fp16.onnx
 ```
 
-## 4. Prepare llama.cpp Shared Libraries
+## 4. Get llama.cpp Runtime Libraries
 
-`runtime/llama_cpp_bindings.py` loads llama.cpp shared libraries from this repository's `bin/` directory. The source tree only keeps `bin/llama_wrap.c`; the following `.so` files are local build artifacts and are not committed to git:
+This project calls llama.cpp's C API directly via ctypes. Place the `.so` files into `bin/`.
 
-```text
-bin/libggml.so              # llama.cpp
-bin/libggml-base.so         # llama.cpp dependency
-bin/libggml-cpu.so          # llama.cpp dependency
-bin/libggml-cuda.so         # CUDA backend, required for GPU inference
-bin/libllama.so             # llama.cpp
-bin/libllama_wrap.so        # ctypes wrapper from this repository
+### Option 1: Download Pre-built Package (Recommended)
+
+Download the tarball for your backend from [llama.cpp Releases](https://github.com/ggml-org/llama.cpp/releases/latest):
+
+| Backend | Download | Size |
+|---------|----------|------|
+| Vulkan (NVIDIA / AMD / Intel) | `llama-bXXXX-bin-ubuntu-vulkan-x64.tar.gz` | ~32 MB |
+| CPU only | `llama-bXXXX-bin-ubuntu-x64.tar.gz` | ~15 MB |
+| ROCm (AMD) | `llama-bXXXX-bin-ubuntu-rocm-x64.tar.gz` | ~128 MB |
+
+> `bXXXX` is the build number; pick the latest version.
+
+Extract and copy the `.so*` files into `bin/`:
+
+```bash
+tar xzf llama-bXXXX-bin-ubuntu-vulkan-x64.tar.gz
+cp -a llama-bXXXX-bin-ubuntu-vulkan-x64/lib*.so* bin/
 ```
 
-Build llama.cpp first:
+`libvulkan.so` is a system package: `apt install libvulkan1` on Ubuntu / Debian.
+
+### Option 2: Build from Source
 
 ```bash
 git clone https://github.com/ggml-org/llama.cpp.git ../llama.cpp
-cmake -S ../llama.cpp -B ../llama.cpp/build \
-  -DGGML_CUDA=ON \
-  -DBUILD_SHARED_LIBS=ON \
-  -DCMAKE_BUILD_TYPE=Release
-cmake --build ../llama.cpp/build -j
+
+# Vulkan (recommended, works on NVIDIA / AMD / Intel)
+cmake -S ../llama.cpp -B ../llama.cpp/build -DGGML_VULKAN=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build ../llama.cpp/build --config Release -j"$(nproc)"
+
+# CPU only
+# cmake -S ../llama.cpp -B ../llama.cpp/build -DCMAKE_BUILD_TYPE=Release
+
+# CUDA
+# cmake -S ../llama.cpp -B ../llama.cpp/build -DGGML_CUDA=ON -DCMAKE_BUILD_TYPE=Release
+
+cp -a ../llama.cpp/build/bin/lib*.so* bin/
 ```
 
-Place the llama.cpp runtime libraries under this repository's `bin/`. For local development, symlinks are fine; for release bundles, use `cp -a` to preserve the symlink chain and versioned files:
+### Final `bin/` Directory
 
-```bash
-mkdir -p bin
-
-# Development: symlink to the local llama.cpp build
-ln -sf "$(realpath ../llama.cpp/build/bin/libggml.so)" bin/libggml.so
-ln -sf "$(realpath ../llama.cpp/build/bin/libllama.so)" bin/libllama.so
-
-# Release bundle: copy the complete dependency chain
-cp -a ../llama.cpp/build/bin/libggml*.so* bin/
-cp -a ../llama.cpp/build/bin/libllama.so* bin/
+```text
+bin/
+├── libllama.so*
+├── libggml.so*
+├── libggml-base.so*
+├── libggml-cpu.so*
+└── libggml-vulkan.so*   # or libggml-cuda.so* (depending on backend)
 ```
 
-Then build this repository's wrapper:
-
-```bash
-gcc -shared -fPIC -o bin/libllama_wrap.so bin/llama_wrap.c \
-  -I../llama.cpp/include -I../llama.cpp/ggml/include \
-  -Lbin -lllama -lggml \
-  -Wl,-rpath,'$ORIGIN'
-```
-
-`$ORIGIN` tells the dynamic loader to resolve `libllama.so` / `libggml.so` from the same `bin/` directory as `libllama_wrap.so`, so users do not need to set `LD_LIBRARY_PATH` manually.
+Vulkan backend is recommended for NVIDIA users for best compatibility.
 
 ## 5. Runtime Entry
 
@@ -234,10 +241,9 @@ This keeps deployment simple:
 
 These paths are git-ignored:
 
-- `models/export/`
-- `models/`
-- `*.gguf`
-- `bin/*.so`
+- `models/` — original models and export artifacts
+- `*.gguf` — GGUF decoder
+- `bin/*.so*` — runtime libraries, user-provided
 
 They are generated or downloaded artifacts and should not be committed to source control.
 

@@ -16,7 +16,7 @@
 - `runtime/glm_ocr_llama.py`
 - `runtime/glm_ocr_onnx.py`
 - `runtime/llama_cpp_bindings.py`
-- `bin/llama_wrap.c`
+- `runtime/llama_cpp_bindings.py`
 - VidGo 集成路径（参考）：`<VIDGO_ROOT>/backend/vid_under/glm_ocr_llama.py`
 - VidGo 集成路径（参考）：`<VIDGO_ROOT>/backend/vid_under/views_download.py`
 
@@ -40,7 +40,7 @@ python3 runtime/glm_ocr_llama.py \
 | 模型目录不固定 | runtime 找不到 `config.json` 或 ONNX 文件 |
 | ONNX external data 命名不一致 | `.onnx_data`、`_data`、`.onnx.data` 混用 |
 | chat template 缺失 | prompt 构造失败或和官方模板不一致 |
-| llama.cpp 动态库路径不一致 | `libllama.so` / `libllama_wrap.so` 加载失败 |
+| llama.cpp 动态库路径不一致 | `libllama.so` / `libggml.so` 加载失败 |
 
 所以发布阶段要做的是，把运行边界拢成一个稳定目录，规定好协议。
 
@@ -338,7 +338,7 @@ GLM-OCR 的发布整理不是“把能跑的文件打包一下”。真正要固
 
 1. **目录边界**：ONNX 目录只认一个根路径。
 2. **文件边界**：external data 后缀和 ONNX 内部 location 必须一致。
-3. **ABI 边界**：`libllama_wrap.so` 必须和当前 llama.cpp 动态库匹配。
+3. **ABI 边界**：`libllama.so` / `libggml.so` 必须和当前 llama.cpp 版本匹配。
 4. **验证边界**：smoke test 必须只依赖最小运行集，而不是开发缓存。
 
 这四个边界固定以后，GLM-OCR 才能从“我的机器能跑”变成“别人下载后也能跑”。

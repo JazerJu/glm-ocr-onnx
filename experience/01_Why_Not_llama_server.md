@@ -11,7 +11,7 @@ onnx 与llama.cpp的特点
 - opencode `ses_1787239e8ffehNckZPK6etlogO`: Find GLM-OCR GGUF and mRoPE support
 - opencode `ses_15a2a6bc0ffe1icaU1zLeNHRfr`: Debug GLM-OCR ctypes embd mRoPE
 - opencode `ses_1796eededffezn1I53DOJXDC0G`: 优化视频理解项目-glmocr-纯onnx推理
-- 当前仓库：`runtime/glm_ocr_llama.py`、`runtime/glm_ocr_onnx.py`、`bin/llama_wrap.c`
+- 当前仓库：`runtime/glm_ocr_llama.py`、`runtime/glm_ocr_onnx.py`
 
 ---
 
@@ -139,7 +139,7 @@ image
 确定了路线之后，ctypes 直调遇到的两个技术坑——mRoPE position layout 和 struct-by-value ABI——分别在后续两篇展开：
 
 - **[02: Debugging mRoPE Embedding Injection](02_Debugging_mRoPE_Embedding_Injection.md)**：ONNX vision 输出正确、text embedding 正确，但端到端乱码。根因是 image embeddings 进入 llama.cpp 的 mRoPE position 布局不等价于 `mtmd-helper`。
-- `llama_wrap.c` 的防御性 wrapper：——原来从 MiniCPM-V 复用，后续验证发现直接 ctypes 构建 struct by value 也可工作，wrapper 不是严格必需的。
+- 直接 ctypes 构建 struct by value 也可工作，不需要 C wrapper。
 
 ---
 
