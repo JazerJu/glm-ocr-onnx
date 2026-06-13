@@ -40,10 +40,10 @@ Recommended layout:
 ```bash
 mkdir -p models
 
-huggingface-cli download zai-org/GLM-OCR \
+hf download zai-org/GLM-OCR \
   --local-dir models/GLM-OCR
 
-huggingface-cli download ggml-org/GLM-OCR-GGUF \
+hf download ggml-org/GLM-OCR-GGUF \
   --include "GLM-OCR-Q8_0.gguf" \
   --local-dir models/GLM-OCR-GGUF
 ```
