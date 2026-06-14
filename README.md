@@ -120,7 +120,7 @@ models/export/onnx/
 
 ### 方式一：下载预编译包（推荐）
 
-从 [llama.cpp b9159 Release](https://github.com/ggml-org/llama.cpp/releases/tag/b9159) 下载对应后端的 tarball：
+从 [llama.cpp Release](https://github.com/ggml-org/llama.cpp/releases/latest) 下载对应后端的 tarball：
 
 | 后端 | 下载文件 | 大小 |
 |------|---------|------|
@@ -128,7 +128,11 @@ models/export/onnx/
 | CPU only | `llama-bXXXX-bin-ubuntu-x64.tar.gz` | ~15 MB |
 | ROCm (AMD) | `llama-bXXXX-bin-ubuntu-rocm-x64.tar.gz` | ~128 MB |
 
-> `bXXXX` 是 llama.cpp 的 build（版本）号。本项目已测试 **b9159**（最低 **b7668**），请在此范围内选择 release。
+> `bXXXX` 是 llama.cpp 的 build（版本）号。当前 Python ctypes 绑定已同步到 **b9409+** 的
+> `llama_context_params` 布局，本地使用新布局的 `libllama.so` 验证通过。替换 llama.cpp
+> 二进制时，请确认 `runtime/llama_cpp_bindings.py` 中的 `llama_model_params` /
+> `llama_context_params` 与所用 `llama.h` 保持一致；结构体错位会导致随机初始化错误或
+> C++ assert。
 
 解压后把 `.so*` 复制到 `bin/`：
 

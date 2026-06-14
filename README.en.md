@@ -120,7 +120,7 @@ This project calls llama.cpp's C API directly via ctypes. Place the `.so` files 
 
 ### Option 1: Download Pre-built Package (Recommended)
 
-Download the tarball for your backend from [llama.cpp b9159 Release](https://github.com/ggml-org/llama.cpp/releases/tag/b9159):
+Download the tarball for your backend from [llama.cpp Release](https://github.com/ggml-org/llama.cpp/releases/latest):
 
 | Backend | Download | Size |
 |---------|----------|------|
@@ -128,7 +128,12 @@ Download the tarball for your backend from [llama.cpp b9159 Release](https://git
 | CPU only | `llama-bXXXX-bin-ubuntu-x64.tar.gz` | ~15 MB |
 | ROCm (AMD) | `llama-bXXXX-bin-ubuntu-rocm-x64.tar.gz` | ~128 MB |
 
-> `bXXXX` is the llama.cpp build (version) number. This project is tested with **b9159** (minimum **b7668**) — pick a release in that range.
+> `bXXXX` is the llama.cpp build (version) number. The current Python ctypes bindings
+> track the **b9409+** `llama_context_params` layout and have been validated locally
+> with that newer runtime layout. If you replace the llama.cpp binaries, make sure
+> `llama_model_params` / `llama_context_params` in `runtime/llama_cpp_bindings.py`
+> still match your `llama.h`; a struct-layout mismatch can cause random initialization
+> failures or C++ asserts.
 
 Extract and copy the `.so*` files into `bin/`:
 

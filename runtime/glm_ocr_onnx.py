@@ -46,9 +46,9 @@ class GlmOcrOnnx:
         self.tokenizer = Tokenizer.from_file(str(self.model_dir / "tokenizer.json"))
         self.providers = self._select_providers()
 
-        vision_onnx = self.onnx_dir / "vision_encoder_fp32.onnx"
+        vision_onnx = self.onnx_dir / "vision_encoder_q4.onnx"
         if not vision_onnx.exists():
-            vision_onnx = self.onnx_dir / "vision_encoder_q4.onnx"
+            vision_onnx = self.onnx_dir / "vision_encoder_fp32.onnx"
         self.vision_session = self._new_session(vision_onnx)
         embed_onnx = self.onnx_dir / "embed_tokens_q4.onnx"
         if not embed_onnx.exists():
@@ -75,6 +75,7 @@ class GlmOcrOnnx:
 
     def _new_session(self, path: Path) -> ort.InferenceSession:
         options = ort.SessionOptions()
+        options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
         options.log_severity_level = 3
         try:
             return ort.InferenceSession(str(path), sess_options=options, providers=self.providers)
