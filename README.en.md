@@ -120,7 +120,7 @@ This project calls llama.cpp's C API directly via ctypes. Place the `.so` files 
 
 ### Option 1: Download Pre-built Package (Recommended)
 
-Download the tarball for your backend from [llama.cpp Releases](https://github.com/ggml-org/llama.cpp/releases/latest):
+Download the tarball for your backend from [llama.cpp b9159 Release](https://github.com/ggml-org/llama.cpp/releases/tag/b9159):
 
 | Backend | Download | Size |
 |---------|----------|------|
@@ -128,7 +128,7 @@ Download the tarball for your backend from [llama.cpp Releases](https://github.c
 | CPU only | `llama-bXXXX-bin-ubuntu-x64.tar.gz` | ~15 MB |
 | ROCm (AMD) | `llama-bXXXX-bin-ubuntu-rocm-x64.tar.gz` | ~128 MB |
 
-> `bXXXX` is the build number; pick the latest version.
+> `bXXXX` is the llama.cpp build (version) number. This project is tested with **b9159** (minimum **b7668**) — pick a release in that range.
 
 Extract and copy the `.so*` files into `bin/`:
 
