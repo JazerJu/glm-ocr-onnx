@@ -31,11 +31,10 @@ class GlmOcrLlama:
         if onnx_dir is None:
             onnx_dir = str(Path(__file__).resolve().parents[1] / "models" / "export")
 
-        self.onnx = GlmOcrOnnx(onnx_dir, max_tokens=2048)
-
         self.model = LlamaModel(gguf_path, n_gpu_layers=n_gpu_layers)
         self.n_embd = self.model.n_embd
         self.ctx = LlamaContext(self.model, n_ctx=n_ctx, n_batch=n_ctx)
+        self.onnx = GlmOcrOnnx(onnx_dir, max_tokens=2048)
 
         with open(Path(onnx_dir) / "config.json") as f:
             cfg = json.load(f)
